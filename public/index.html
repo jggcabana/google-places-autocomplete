@@ -1,0 +1,54 @@
+<html>
+
+<head>
+  <title>Place Autocomplete</title>
+  <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+    rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
+    crossorigin="anonymous">
+  <link rel="stylesheet" type="text/css" href="./style.css" />
+</head>
+
+<body>
+  <div class="container">
+    <h1>[POC] Google Places Autocomplete</h1>
+    <form>
+      <h3>Autocomplete parameters</h3>
+      <div class="mb-3">
+        <label for="country-select" class="form-label">Country</label>
+        <select id="country-select" class="form-control form-select" aria-label="Select Country">
+        </select>
+      </div>
+      <div class="mb-3">
+        <label for="pac-input" class="form-label">Address</label>
+        <input class="form-control" id="pac-input" type="text" placeholder="Enter a location (auto-complete)" />
+      </div>
+      <h3>Auto-populated fields</h3>
+      <fieldset id="auto-populate">
+        <div class="mb-3">
+          <label for="address-state" class="form-label">State <code>(administrative_area_level_1)</code></label>
+          <input type="text" class="form-control" id="address-state">
+        </div>
+        <div class="mb-3">
+          <label for="address-province" class="form-label">Province <code>(administrative_area_level_2)</code></label>
+          <input type="text" class="form-control" id="address-province">
+        </div>
+        <div class="mb-3">
+          <label for="address-city" class="form-label">City <code>(locality)</code></label>
+          <input type="text" class="form-control" id="address-city">
+        </div>
+        <div class="mb-3">
+          <label for="address-zip" class="form-label">Zip <code>(postal_code)</code></label>
+          <input type="text" class="form-control" id="address-zip">
+        </div>
+      </fieldset>
+    </form>
+  </div>
+</body>
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"
+  integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+<script
+  src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDFlHPPz-psboy0sdCJm7jeq-Gs6wcQQ0k&libraries=places&v=weekly"
+  defer></script>
+<script type="module" src="./index.js"></script>
+
+</html>
