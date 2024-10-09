@@ -6,8 +6,8 @@
 ### Features
 - Autocomplete address searchbox - form input with Google Places Autocomplete.
 - Auto-populated address fields - form inputs that will populate on value change of the autocomplete input.
-- Debounced input - includes a debounced handler for input events, so that the Google Places API is not requested for each keystroke (with very low latency) 
-- 
+- Debounced input - includes a debounced handler for input events, so that the Google Places API is not requested for each keystroke.
+
 ### Local Development Setup
 - Requires Node.js - https://nodejs.org/en
 - Requires a Google Places API Key. Create an account and generate your key - [Overview | Places API | Google for Developers](https://developers.google.com/maps/documentation/places/web-service/overview)

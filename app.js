@@ -1,8 +1,11 @@
 import express from 'express';
+
+const PORT_NUMBER = 6969;
 const app = express();
 
 app.use('/', express.static('./public'));
 
-app.listen(6969, () => {
-  console.log('Listening on port 3000...');
+
+app.listen(PORT_NUMBER, () => {
+  console.log(`Listening on port ${PORT_NUMBER}...`);
 });
