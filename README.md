@@ -37,7 +37,7 @@
 	const autocomplete = google.maps.places.AutocompleteSuggestion;
 	const { suggestions } = await autocomplete.fetchAutocompleteSuggestions(request);
 	```
-- To get the details of a single prediction, instantiate a `Place` object and call it's `fetchFields` method:
+- To get the details of a single prediction, instantiate a `Place` object and call its `fetchFields` method:
 	```
 	// placeId obtained from fetchAutocompleteSuggestions response
 	let place = new google.maps.places.Place({ id: placeId });
