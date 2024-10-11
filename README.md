@@ -1,4 +1,6 @@
-# [POC] Google Places Autocomplete
+
+# [POC] Google Places Autocomplete (New)
+
 ### Overview
 - A minimal Node.js app to test/utilize the Google Places Autocomplete API.
 - Uses jQuery + Bootstrap for component styling.
@@ -20,30 +22,34 @@
 - In the root directory, run `npm start`. Make sure you've restored the needed node packages in the root directory (`npm install`).
 
 ### Google Places API Quick Start
-- Initialize the Google Places Autocomplete service:
+- Create an `AutocompleteSessionToken`. This token is important because it groups several autocomplete requests (up to 12) into one billable unit. The token is automatically invalidated once a call to `Place.fetchFields` is made. A new token must be regenerated once the previous token becomes invalid.
 	```
-	const autocompleteService = new  google.maps.places.AutocompleteService();
+	var sessionToken = new google.maps.places.AutocompleteSessionToken();
 	```
-- Get Autocomplete predictions (to see the different autocomplete request options, see https://developers.google.com/maps/documentation/javascript/reference/places-autocomplete-service#AutocompletionRequest):
+- Get Autocomplete predictions:
 	```
-	const autocompleteRequest = {
+	const request = {
 		input: input,
-		componentRestrictions: { country: 'ph' } // ISO 3166-2 country code
+		includedRegionCodes: ['ph'], // ISO 3166-2 country codes
+		sessionToken: sessionToken
 	};
 	
-	// Create a callback to handle the response
-	autocompleteService.getPlacePredictions(autocompleteRequest, autoCompletecallBack);
+	const autocomplete = google.maps.places.AutocompleteSuggestion;
+	const { suggestions } = await autocomplete.fetchAutocompleteSuggestions(request);
 	```
-- To get the details of a single prediction, initialize the Google Places Service (different from the Google Places ***Autocomplete*** Service:
+- To get the details of a single prediction, instantiate a `Place` object and call it's `fetchFields` method:
 	```
-	// The service needs an html element to be constructed 
-	const placesService = new google.maps.places.PlacesService(window.document.createElement('div'));
+	// placeId obtained from fetchAutocompleteSuggestions response
+	let place = new google.maps.places.Place({ id: placeId });
 
-	const request = {
-		placeId: prediction.place_id, // place id obtained from an autocomplete prediction response
-		fields: ['address_components', 'name', 'formatted_address']
-	}
-	
-	// Create a callback to handle the response	
-	placesService.getDetails(request, getDetailsCallback);
+	// Only include the fields you need
+	await place.fetchFields({ fields: ['addressComponents', 'formattedAddress'] });
+
+	// Do something with the fields you requested
+	console.log(place.addressComponents);
+	console.log(place.formattedAddress);
 	```
+### Quick Links
+- [Autocomplete (New) | Places API | Google for Developers](https://developers.google.com/maps/documentation/places/web-service/place-autocomplete)
+- [Place Class Data Fields | Maps JavaScript API | Google for Developers](https://developers.google.com/maps/documentation/javascript/place-class-data-fields)
+- [Place Types | Maps JavaScript API | Google for Developers](https://developers.google.com/maps/documentation/javascript/place-types)

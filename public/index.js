@@ -7,7 +7,7 @@ function initGooglePlacesService() {
 
     const autocomplete = google.maps.places.AutocompleteSuggestion;
 
-    // This session is needed to group all the requests into one billing unit,
+    // This token is needed to group all the requests into one billing unit,
     // until a call to place.fetchFields() is made.
     var sessionToken = null;
 
@@ -16,6 +16,7 @@ function initGooglePlacesService() {
 
     async function autocompleteInputListener() {
         try {
+            // Create a token if null
             sessionToken = sessionToken || new google.maps.places.AutocompleteSessionToken();
             displaySessionToken(sessionToken);
             let input = $(this).val();
