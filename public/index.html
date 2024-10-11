@@ -22,8 +22,9 @@
         <label for="pac-input" class="form-label">Address</label>
         <input class="form-control" id="pac-input" type="text" placeholder="Enter a location (auto-complete)" />
       </div>
+      <div id="token-section" style="display:none;">
+      </div>
       <div id="predictions-section" style="display:none;">
-        <div class="loader" style="display:none;"></div>
       </div>
       <h3>Auto-populated fields</h3>
       <fieldset id="auto-populate">
@@ -52,6 +53,6 @@
 <script
   src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDFlHPPz-psboy0sdCJm7jeq-Gs6wcQQ0k&libraries=places&v=weekly"
   defer></script>
-<script type="module" src="./index.js"></script>
+<script src="./index.js"></script>
 
 </html>

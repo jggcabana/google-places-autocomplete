@@ -4,24 +4,33 @@ $(async function () {
 });
 
 function initGooglePlacesService() {
-    const autocompleteService = new google.maps.places.AutocompleteService();
-    const placesService = new google.maps.places.PlacesService(window.document.createElement('div'));
 
-    $('#pac-input').on('input', debounce(autocompleteInputListener, 1000))
+    const autocomplete = google.maps.places.AutocompleteSuggestion;
 
-    function autocompleteInputListener() {
+    // This session is needed to group all the requests into one billing unit,
+    // until a call to place.fetchFields() is made.
+    var sessionToken = null;
 
+    // $('#pac-input').on('input', autocompleteInputListener); // no debounce
+    $('#pac-input').on('input', debounce(autocompleteInputListener, 500));
+
+    async function autocompleteInputListener() {
         try {
+            sessionToken = sessionToken || new google.maps.places.AutocompleteSessionToken();
+            displaySessionToken(sessionToken);
             let input = $(this).val();
 
             if (input) {
                 let country = $('#country-select').val();
-                var autocompleteRequest = {
+
+                var request = {
                     input: input,
-                    componentRestrictions: { country: country }
+                    includedRegionCodes: [country],
+                    sessionToken: sessionToken
                 };
 
-                autocompleteService.getPlacePredictions(autocompleteRequest, autoCompletecallBack);
+                const { suggestions } = await autocomplete.fetchAutocompleteSuggestions(request);
+                autoCompletecallBack(suggestions);
             }
             else {
                 // hide predictions section if blank input 
@@ -32,7 +41,7 @@ function initGooglePlacesService() {
         }
     }
 
-    function autoCompletecallBack(predictions, status) {
+    function autoCompletecallBack(predictions, status = google.maps.places.PlacesServiceStatus.OK) {
         if (status != google.maps.places.PlacesServiceStatus.OK) {
             console.log(status);
             return;
@@ -43,26 +52,29 @@ function initGooglePlacesService() {
         //Fill results section
         predictions.forEach(function (prediction) {
             resultHtml += `
-                <div class="prediction-container" data-placeid="${prediction.place_id}">
+                <div class="prediction-container" data-placeid="${prediction.placePrediction.placeId}">
                 <span class="prediction-item">
-                    ${prediction.description} <code>(${prediction.place_id})</code>
+                    ${prediction.placePrediction.text.text} <code>(${prediction.placePrediction.placeId})</code>
                 </span>
                 </div>
-        `
+            `;
         });
 
         if (resultHtml != undefined && resultHtml != '') {
             $('#predictions-section').html(resultHtml).show();
         }
 
-        // add click handler for result select
-        $(".prediction-container").click(function () {
-            const request = {
-                placeId: $(this).data('placeid'),
-                fields: ['address_components', 'name', 'formatted_address']
-            }
+        // add click handler for result selection
+        $(".prediction-container").click(async function () {
+            let placeId = $(this).data('placeid');
+            let place = new google.maps.places.Place({ id: placeId })
 
-            placesService.getDetails(request, populateForm);
+            await place.fetchFields({ fields: ['addressComponents', 'formattedAddress'] });
+            populateForm(place);
+
+            // invalidate the existing sessionToken so a new one can be made.
+            sessionToken = null;
+            displaySessionToken(sessionToken);
         });
     }
 }
@@ -93,40 +105,44 @@ function getCountries() {
     });
 }
 
-function populateForm(place, status) {
-    if (status != google.maps.places.PlacesServiceStatus.OK) {
-        console.log(status);
-        return;
-    }
-
+function populateForm(place) {
     console.log(place);
     $('#auto-populate input').val('');
 
-    $('#pac-input').val(place.formatted_address);
-    const address = place.address_components;
-    if (!address)
+    $('#pac-input').val(place.formattedAddress);
+
+    if (!place.addressComponents)
         return;
 
-    for (const component of address) {
+    for (const component of place.addressComponents) {
         for (const type of component.types) {
             switch (type) {
                 case 'administrative_area_level_1':
-                    $('#address-state').val(component.short_name);
+                    $('#address-state').val(component.shortText);
                     break;
                 case 'administrative_area_level_2':
-                    $('#address-province').val(component.long_name);
+                    $('#address-province').val(component.longText);
                     break;
                 case 'locality':
-                    $('#address-city').val(component.long_name);
+                    $('#address-city').val(component.longText);
                     break;
                 case 'postal_code':
-                    $('#address-zip').val(component.long_name);
+                    $('#address-zip').val(component.longText);
                     break;
                 default:
                     break;
             }
         }
     }
+}
+
+function displaySessionToken(token) {
+    console.log(token);
+    const tokenPlainText = token ? Object.entries(token)[0][1] : '-'; // for POC purposes only, don't do this
+
+    $('#token-section').html(`
+        <span>Autocomplete session token: <code>${tokenPlainText}</code></span>
+    `).show();
 }
 
 // https://underscorejs.org/docs/modules/debounce.html
