@@ -1,4 +1,7 @@
 # [POC] Google Places Autocomplete
+
+Switch to branch `places/api/v2` for the Google Places (New) API: https://github.com/jggcabana/google-places-autocomplete/tree/places/api/v2
+
 ### Overview
 - A minimal Node.js app to test/utilize the Google Places Autocomplete API.
 - Uses jQuery + Bootstrap for component styling.
